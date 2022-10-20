@@ -3,6 +3,7 @@ import { createClient } from 'contentful'
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
 import Link from 'next/link'
 import Image from 'next/image'
+import Skeleton from '../../components/Skeleton'
 
 const client = createClient({
   space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
@@ -23,7 +24,7 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   }
 }
 
@@ -34,13 +35,26 @@ export const getStaticProps = async ({ params }) => {
     'fields.slug': params.slug,
   })
 
+  if (!items.length) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
   return {
     props: { recipe: items[0] },
+    revalidate: 1,
   }
 }
 
 const Details = ({ recipe }) => {
+  if (!recipe) return <Skeleton />
+
   const { thumbnail, title, cookingTime, ingredients, method } = recipe.fields
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 w-full justify-between px-4 lg:px-10 py-10">
       <div className="flex justify-center lg:justify-start">

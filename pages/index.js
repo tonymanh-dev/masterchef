@@ -14,12 +14,11 @@ export const getStaticProps = async () => {
     props: {
       recipes: res.items,
     },
+    revalidate: 1,
   }
 }
 
 const Recipe = ({ recipes }) => {
-  console.log(recipes)
-
   return (
     <div className="py-10 px-4 lg:px-20">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
